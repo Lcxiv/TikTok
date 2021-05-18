@@ -31,17 +31,18 @@ tiktok <- sqldf('SELECT user_name, n_shares, n_plays, n_likes, n_comments, video
 
 
 
-
-tiktok$group <- c( rep('A', 8), rep('B', 8), rep('C', 8), rep('D', 9))
 data <- tiktok
-empty_bar <- 4
-to_add <- data.frame( matrix(NA, empty_bar*nlevels(data$group), ncol(data)) )
+data$group <- c( rep('Q1', 8), rep('Q2', 8), rep('Q3', 8), rep('Q4', 9))
+
+empty_bar <- 10
+to_add <- data.frame( matrix(NA, empty_bar, ncol(data)) )
 colnames(to_add) <- colnames(data)
 to_add$group <- rep(levels(data$group), each=empty_bar)
 data <- rbind(data, to_add)
 data <- data %>% arrange(group)
 data$id <- seq(1, nrow(data))
 
+# Get the name and the y position of each label
 label_data <- data
 number_of_bar <- nrow(label_data)
 angle <- 90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
@@ -67,36 +68,36 @@ p <- ggplot(data, aes(x=as.factor(id), y=video_length)) +       # Note that id i
   geom_bar(aes(x=as.factor(id), y=video_length, fill=n_shares), stat="identity", alpha=0.5) +
 
   # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
-  geom_segment(data=grid_data, aes(x = end, y = 80, xend = start, yend = 80), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 60, xend = start, yend = 60), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 40, xend = start, yend = 40), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 20, xend = start, yend = 20), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-
-
+  geom_segment(data=grid_data, aes(x = end, y = 60, xend = 32, yend = 60), colour = "grey", alpha=1, size=0.4 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 40, xend = 32, yend = 40), colour = "grey", alpha=1, size=0.4 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 20, xend = 32, yend = 20), colour = "grey", alpha=1, size=0.4 , inherit.aes = FALSE ) +
+  ggplot2::annotate("text", x = rep(max(data$id),3), y = c(20, 40, 60), label = c("20", "40", "60") , color="grey", size=3 , angle=0, fontface="bold", hjust = -0.7 ) +
   
   # Add text showing the value of each 100/75/50/25 lines
-  #annotate("text", x = rep(max(data$id),4), y = c(20, 40, 60 ), label = c("20", "40", "60") , color="grey", size=3 , angle=0, fontface="bold", hjust=1) +
-  
+
   geom_bar(aes(x=as.factor(id), y=video_length, fill=n_shares), stat="identity", alpha=0.5) +
-  ylim(-100,120) +
   theme_minimal() +
   theme(
-    legend.position = "none",
+
     axis.text = element_blank(),
-    axis.title = element_blank(),
     panel.grid = element_blank(),
-    plot.margin = unit(rep(-1,4), "cm") 
+
+    
+     
   ) +
+  ylim(-50,150) +
+  xlab("Top Trending Users") +
   coord_polar() + 
-  geom_text(data=label_data, aes(x=id, y=video_length+10, label=user_name, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2.5, angle= label_data$angle, inherit.aes = FALSE ) +
+  geom_text(data=label_data, aes(x=id, y=video_length+20, label=user_name, hjust=hjust), color="black", fontface="bold",alpha=0.6,size=4, angle= label_data$angle, vjust = 1) +
   
   # Add base line information
-  geom_segment(data=base_data, aes(x = start, y = -5, xend = end, yend = -5), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
-  geom_text(data=base_data, aes(x = title, y = -18, label=group), hjust=c(1,1,0,0), colour = "black", alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)
+  geom_segment(data=base_data, aes(x = start, y = -5, xend = end+3, yend = -5), colour = "black", alpha=0.8 )  +
+  geom_text(data=base_data, aes(x = title, y = -6, label=group), hjust=c(1,1,0,0), colour = "black", alpha=0.8, fontface="bold")
 
-p + scale_fill_viridis_b(option= 'magma')
+p <- p + scale_fill_viridis_b(option= 'magma') 
+p
 
-
+ggsave("CirclePlot.png", p, height = 12 , width = 8)
 
 
 
