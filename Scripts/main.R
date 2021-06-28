@@ -7,13 +7,13 @@ trending_vids <- read.csv("Datasets/trending_vids.csv")
 #View(trending_vids)
 
 #DATASET1 with top 33 users
-n <- 33
-eq = paste0("SELECT user_name, n_shares, n_plays, n_likes, n_comments, video_length
-      FROM trending_vids
-      WHERE n_likes >", n, " GROUP BY user_name
-      ORDER BY n_likes")
+#n <- 33
+#eq = paste0("SELECT user_name, n_shares, n_plays, n_likes, n_comments, video_length
+      #FROM trending_vids
+      #WHERE n_likes >", n, " GROUP BY user_name
+      #ORDER BY n_likes")
 
-new_tik <- sqldf(eq)
+#new_tik <- sqldf(eq)
 
 tiktok <- sqldf('SELECT user_name, n_shares, n_plays, n_likes, n_comments, video_length
       FROM trending_vids
@@ -27,6 +27,7 @@ tiktok2 <- sqldf('SELECT user_name, n_shares, n_plays, n_likes, n_comments, vide
       FROM trending_vids
       GROUP BY user_name
       ORDER BY n_likes')
+tiktok2$id <- seq(1, nrow(tiktok2))
 tiktok2$group <- c( rep('Q1', 1403), rep('Q2', 1403), rep('Q3', 1403), rep('Q4', 1403))
 
 #Special DATASET for circle, but also a copy of TIKTOK with more variables

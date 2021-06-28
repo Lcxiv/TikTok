@@ -89,16 +89,16 @@ shiny_Circle_Bar <- function(data){
 #Scatterplot of the data and regression line if available
 
 shiny_reg <- function(data,X,y,size, fill){
-  reg<-lm(X ~ y, data = data)
-  coeff=coefficients(reg)
+  #reg<-lm(X ~ y, data = data)
+  #coeff=coefficients(reg)
   # Equation of the line : 
   #eq = paste0("y = ", round(coeff[2],1), "*x + ", round(coeff[1],1))
-  intercept <- coeff[1]
-  slope <- coeff[2]
+  #intercept <- coeff[1]
+  #slope <- coeff[2]
   reg_plot <- ggplot(data, aes(X, y, size = size, fill = fill)) + 
     geom_point(alpha=0.5, shape=21, color="black") +
-    geom_abline(intercept = slope, slope = intercept) +
-    #geom_smooth()+
+    #geom_abline(intercept = intercept, slope = slope) +
+    geom_smooth(method = "lm", se = FALSE)+
     scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
     theme(
       legend.position = "none",
